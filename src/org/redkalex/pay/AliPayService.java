@@ -143,7 +143,7 @@ public class AliPayService extends AbstractPayService {
         final PayNotifyResponse result = new PayNotifyResponse();
         result.setPaytype(request.getPaytype());
         final String rstext = "success";
-        Map<String, String> map = request.getMap();
+        Map<String, String> map = request.getAttach();
         final AliPayElement element = elements.get(request.getAppid());
         if (element == null) return result.retcode(RETPAY_CONF_ERROR);
         result.setPayno(map.getOrDefault("out_trade_no", ""));
@@ -152,7 +152,7 @@ public class AliPayService extends AbstractPayService {
         String state = map.getOrDefault("trade_status", "");
         if ("WAIT_BUYER_PAY".equals(state)) return result.retcode(RETPAY_PAY_WAITING);
         if (!"TRADE_SUCCESS".equals(state)) return result.retcode(RETPAY_PAY_FAILED);
-        return result.result(rstext);
+        return result.notifytext(rstext);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class AliPayService extends AbstractPayService {
             if (element.notifyurl != null && !element.notifyurl.isEmpty()) map.put("notify_url", element.notifyurl);
 
             final TreeMap<String, String> biz_content = new TreeMap<>();
-            if (request.getMap() != null) biz_content.putAll(request.getMap());
+            if (request.getAttach() != null) biz_content.putAll(request.getAttach());
             biz_content.put("out_trade_no", request.getPayno());
             biz_content.putIfAbsent("scene", "bar_code");
             biz_content.put("total_amount", "" + (request.getPaymoney() / 100.0));
@@ -442,7 +442,6 @@ public class AliPayService extends AbstractPayService {
 
         // pay.alipay.[x].notifyurl
         //public String notifyurl = ""; //回调url
-
         // pay.alipay.[x].signcertkey
         public String signcertkey = ""; //签名算法需要用到的密钥
 

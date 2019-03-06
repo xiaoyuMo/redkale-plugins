@@ -5,6 +5,8 @@
  */
 package org.redkalex.pay;
 
+import java.util.*;
+
 /**
  *
  * 详情见: https://redkale.org
@@ -23,6 +25,12 @@ public class PayRefundRequest extends PayRequest {
     //支付宝： 标识一次退款请求，同一笔交易多次退款需要保证唯一，如需部分退款，则此参数必传
     protected String refundno = ""; //退款编号 商户系统内部的退款单号。
 
+    protected String clienthost = ""; //HTTP请求的Host
+
+    protected String clientAddr = "";  //客户端IP地址
+
+    protected Map<String, String> attach; //扩展信息
+
     @Override
     public void checkVaild() {
         super.checkVaild();
@@ -30,6 +38,21 @@ public class PayRefundRequest extends PayRequest {
         if (this.paymoney < 1) throw new RuntimeException("paymoney is illegal");
         if (this.refundno == null || this.refundno.isEmpty()) throw new RuntimeException("refundno is illegal");
         if (this.thirdpayno == null || this.thirdpayno.isEmpty()) throw new RuntimeException("thirdpayno is illegal");
+        if (this.clientAddr == null || this.clientAddr.isEmpty()) throw new RuntimeException("clientAddr is illegal");
+    }
+
+    public Map<String, String> attach(String key, Object value) {
+        if (this.attach == null) this.attach = new TreeMap<>();
+        this.attach.put(key, String.valueOf(value));
+        return this.attach;
+    }
+
+    public String getAttach(String name) {
+        return attach == null ? null : attach.get(name);
+    }
+
+    public String getAttach(String name, String defValue) {
+        return attach == null ? defValue : attach.getOrDefault(name, defValue);
     }
 
     public long getRefundmoney() {
@@ -62,6 +85,67 @@ public class PayRefundRequest extends PayRequest {
 
     public void setThirdpayno(String thirdpayno) {
         this.thirdpayno = thirdpayno;
+    }
+
+    public String getClienthost() {
+        return clienthost;
+    }
+
+    public void setClienthost(String clienthost) {
+        this.clienthost = clienthost;
+    }
+
+    public String getClientAddr() {
+        return clientAddr;
+    }
+
+    public void setClientAddr(String clientAddr) {
+        this.clientAddr = clientAddr;
+    }
+
+    public Map<String, String> getAttach() {
+        return attach;
+    }
+
+    public void setAttach(Map<String, String> attach) {
+        this.attach = attach;
+    }
+
+    @Deprecated
+    public Map<String, String> add(String key, String value) {
+        if (this.attach == null) this.attach = new TreeMap<>();
+        this.attach.put(key, value);
+        return this.attach;
+    }
+
+    @Deprecated
+    public String attach(String name) {
+        return attach == null ? null : attach.get(name);
+    }
+
+    @Deprecated
+    public String attach(String name, String defValue) {
+        return attach == null ? defValue : attach.getOrDefault(name, defValue);
+    }
+
+    @Deprecated
+    public String getMapValue(String name) {
+        return attach == null ? null : attach.get(name);
+    }
+
+    @Deprecated
+    public String getMapValue(String name, String defValue) {
+        return attach == null ? defValue : attach.getOrDefault(name, defValue);
+    }
+
+    @Deprecated
+    public Map<String, String> getMap() {
+        return attach;
+    }
+
+    @Deprecated
+    public void setMap(Map<String, String> map) {
+        this.attach = map;
     }
 
 }
